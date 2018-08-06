@@ -3,15 +3,28 @@
 <script>
     var canvas;
     var canvasContext;
+    var ballX = 50;
+    var ballY;
 
 window.onload = function() {
     console.log("Hello");
     canvas = document.getElementById('gameCanvas');
     canvasContext = canvas.getContext('2d');
-    canvasContext.fillstyle = 'black';
-    canvasContext.fillRect(0,0, canvas.width, canvas.height);
+
+    var fPS = 30; //frames per second
+    setInterval(drawEverything, 1000/fPS);
+   
 }
 
+function drawEverything(){
+    ballX+=6;
+
+    
+    canvasContext.fillStyle = 'black';
+    canvasContext.fillRect(0,0, canvas.width, canvas.height);
+    canvasContext.fillStyle = 'red';
+    canvasContext.fillRect(ballX, 100,10,10); //red box
+}
 
 </script>
 </html>
