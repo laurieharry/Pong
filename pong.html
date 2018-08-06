@@ -4,6 +4,8 @@
     var canvas;
     var canvasContext;
     var ballX = 50;
+    var ballSpeedX = 10;
+    var ballSpeedY;
     var ballY;
 
 window.onload = function() {
@@ -12,18 +14,34 @@ window.onload = function() {
     canvasContext = canvas.getContext('2d');
 
     var fPS = 30; //frames per second
-    setInterval(drawEverything, 1000/fPS);
+    setInterval(function(){moveEverything(),drawEverything();}, 1000/fPS);
    
 }
 
+/*function callBoth(){
+    moveEverything();
+    drawEverything();
+}
+*/
+function moveEverything(){
+    ballX+=ballSpeedX;
+    if (ballX > gameCanvas.width -10 || ballX < 1 ){ //if the ball hits the edge of the canvas then reverse it's direction
+        ballSpeedX = -ballSpeedX;
+    }
+    
+}
+
 function drawEverything(){
-    ballX+=6;
+    //ballX+=6; 
 
     
     canvasContext.fillStyle = 'black';
     canvasContext.fillRect(0,0, canvas.width, canvas.height);
     canvasContext.fillStyle = 'red';
     canvasContext.fillRect(ballX, 100,10,10); //red box
+
+    canvasContext.fillStyle = "yellow";
+    canvasContext.fillRect(1,210,10,100); //yellow paddle
 }
 
 </script>
