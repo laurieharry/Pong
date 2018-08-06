@@ -1,12 +1,15 @@
 <html>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
 <script>
     var canvas;
     var canvasContext;
     var ballX = 50;
+    var ballY = 50;
     var ballSpeedX = 10;
-    var ballSpeedY;
-    var ballY;
+    var ballSpeedY = 4;
+    
+    var pad1Y = 250;
+    const PADDLE_HEIGHT = 100;
 
 window.onload = function() {
     console.log("Hello");
@@ -25,24 +28,39 @@ window.onload = function() {
 */
 function moveEverything(){
     ballX+=ballSpeedX;
-    if (ballX > gameCanvas.width -10 || ballX < 1 ){ //if the ball hits the edge of the canvas then reverse it's direction
+    if (ballX > gameCanvas.width -10 || ballX < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedX = -ballSpeedX;
     }
     
+    ballY+=ballSpeedY;
+    if (ballY > gameCanvas.width -10 || ballY < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
+        ballSpeedY = -ballSpeedY;
+    }
 }
 
 function drawEverything(){
-    //ballX+=6; 
-
+      
+    //canvasContext.fillStyle = 'black';
+    colourRect(0,0, canvas.width, canvas.height, 'black'); //creates black background
     
-    canvasContext.fillStyle = 'black';
-    canvasContext.fillRect(0,0, canvas.width, canvas.height);
-    canvasContext.fillStyle = 'red';
-    canvasContext.fillRect(ballX, 100,10,10); //red box
+    
+    colourCircle(ballX,ballY,10, 'red');//make the ball
+    //colourRect(ballX, 100,10,10, 'red'); //red ball
 
-    canvasContext.fillStyle = "yellow";
-    canvasContext.fillRect(1,210,10,100); //yellow paddle
+    //canvasContext.fillStyle = "yellow";
+    colourRect(1,210,10,100, 'yellow'); //yellow paddle
+    colourRect(canvas.width-11,210,10,100, 'blue');//blue paddle
 }
 
+function colourRect(leftX,topY, width,height, drawColour){ //funciton for drawing rectangles
+    canvasContext.fillStyle = drawColour;
+    canvasContext.fillRect(leftX,topY,width,height);
+}
+function colourCircle(centreX, centreY, radius, drawColour){
+    canvasContext.fillStyle = drawColour;
+    canvasContext.beginPath();
+    canvasContext.arc(centreX, centreY, radius, 0,Math.PI*2, true);
+    canvasContext.fill();
+}
 </script>
 </html>
