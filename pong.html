@@ -9,7 +9,20 @@
     var ballSpeedY = 4;
     
     var pad1Y = 250;
+    var pad2Y = 250;
     const PADDLE_HEIGHT = 100;
+    const PADDLE_THICKNESS = 11;
+
+function calcMousePos(evt){ //function for finding the cursor position
+    var rect = canvas.getBoundingClientRect();
+    var root = document.documentElement;
+    var mouseX = evt.clientX - rect.left - root.scrollLeft;
+    var mouseY = evt.clientY - rect.top - root.scrollTop;
+    return{
+        x: mouseX,
+        y: mouseY
+    };
+}
 
 window.onload = function() {
     console.log("Hello");
@@ -18,20 +31,43 @@ window.onload = function() {
 
     var fPS = 30; //frames per second
     setInterval(function(){moveEverything(),drawEverything();}, 1000/fPS);
+
+    canvas.addEventListener('mousemove', function(evt){
+        var mousePos = calcMousePos(evt);
+        pad1Y = mousePos.y-(PADDLE_HEIGHT/2);
+    });
    
 }
 
-/*function callBoth(){
-    moveEverything();
-    drawEverything();
-}
-*/
 function moveEverything(){
     ballX+=ballSpeedX;
-    if (ballX > gameCanvas.width -10 || ballX < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
+    /*if (ballX > gameCanvas.width -10 || ballX < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedX = -ballSpeedX;
     }
-    
+    */
+    if (ballX <= PADDLE_THICKNESS) { //check if the ball hits the left(yellow) paddle
+        if (ballY > pad1Y && ballY < pad1Y + PADDLE_HEIGHT) {
+            ballSpeedX = -ballSpeedX;
+        }else{
+            ballReset();
+        }
+    }
+
+    if (ballX >= canvas.width-PADDLE_THICKNESS) { //check if the ball hits the right(blue) paddle
+        if (ballY > pad2Y && ballY < pad2Y + PADDLE_HEIGHT) {
+            ballSpeedX = -ballSpeedX;
+        }else{
+            ballReset();
+        }
+    }
+
+    /*if (ballX <= 0){ //reset the ball if it misses a paddle
+        ballReset();
+    }
+    if (ballX >= canvas.width){  //reset the ball if it misses a paddle
+        ballReset();
+    }*/
+
     ballY+=ballSpeedY;
     if (ballY > gameCanvas.width -10 || ballY < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedY = -ballSpeedY;
@@ -48,8 +84,8 @@ function drawEverything(){
     //colourRect(ballX, 100,10,10, 'red'); //red ball
 
     //canvasContext.fillStyle = "yellow";
-    colourRect(1,210,10,100, 'yellow'); //yellow paddle
-    colourRect(canvas.width-11,210,10,100, 'blue');//blue paddle
+    colourRect(1,pad1Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'yellow'); //yellow PLAYERS paddle
+    colourRect(canvas.width-PADDLE_THICKNESS,pad2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'blue');//blue paddle
 }
 
 function colourRect(leftX,topY, width,height, drawColour){ //funciton for drawing rectangles
@@ -62,5 +98,12 @@ function colourCircle(centreX, centreY, radius, drawColour){
     canvasContext.arc(centreX, centreY, radius, 0,Math.PI*2, true);
     canvasContext.fill();
 }
+
+function ballReset(){
+    ballSpeedX = -ballSpeedX;
+    ballX = canvas.width/2;
+    ballY = canvas.height/2;
+}
+
 </script>
 </html>
