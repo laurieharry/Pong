@@ -13,6 +13,9 @@
     const PADDLE_HEIGHT = 100;
     const PADDLE_THICKNESS = 11;
 
+    var p1Score = 0;
+    var p2Score = 0;
+
 function calcMousePos(evt){ //function for finding the cursor position
     var rect = canvas.getBoundingClientRect();
     var root = document.documentElement;
@@ -39,16 +42,27 @@ window.onload = function() {
    
 }
 
+function compMove(){ // for moving the right paddle
+    var pad2YCenter = pad2Y +(PADDLE_HEIGHT/2);
+    if(pad2YCenter < ballY - 35){
+        pad2Y+=8;
+    }else if(pad2YCenter > ballY + 35){
+        pad2Y-=8;
+    }
+}
+
 function moveEverything(){
-    ballX+=ballSpeedX;
+    ballX+=ballSpeedX; //move the ball
     /*if (ballX > gameCanvas.width -10 || ballX < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedX = -ballSpeedX;
     }
     */
+    compMove();
     if (ballX <= PADDLE_THICKNESS) { //check if the ball hits the left(yellow) paddle
         if (ballY > pad1Y && ballY < pad1Y + PADDLE_HEIGHT) {
             ballSpeedX = -ballSpeedX;
         }else{
+            p2Score++;
             ballReset();
         }
     }
@@ -57,6 +71,7 @@ function moveEverything(){
         if (ballY > pad2Y && ballY < pad2Y + PADDLE_HEIGHT) {
             ballSpeedX = -ballSpeedX;
         }else{
+            p1Score++;
             ballReset();
         }
     }
@@ -68,14 +83,14 @@ function moveEverything(){
         ballReset();
     }*/
 
-    ballY+=ballSpeedY;
+    ballY+=ballSpeedY;//move the ball 
     if (ballY > gameCanvas.width -10 || ballY < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedY = -ballSpeedY;
     }
 }
 
 function drawEverything(){
-      
+    
     //canvasContext.fillStyle = 'black';
     colourRect(0,0, canvas.width, canvas.height, 'black'); //creates black background
     
@@ -85,7 +100,11 @@ function drawEverything(){
 
     //canvasContext.fillStyle = "yellow";
     colourRect(1,pad1Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'yellow'); //yellow PLAYERS paddle
+    canvasContext.fillText("SCORE: "+p1Score, 100, 100);
+    
     colourRect(canvas.width-PADDLE_THICKNESS,pad2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'blue');//blue paddle
+
+    canvasContext.fillText("SCORE: "+p2Score, canvas.width - 100,100);
 }
 
 function colourRect(leftX,topY, width,height, drawColour){ //funciton for drawing rectangles
