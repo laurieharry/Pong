@@ -15,6 +15,9 @@
 
     var p1Score = 0;
     var p2Score = 0;
+    const WIN_SCORE = 5;
+
+    var showWinScreen = false;
 
 function calcMousePos(evt){ //function for finding the cursor position
     var rect = canvas.getBoundingClientRect();
@@ -27,6 +30,14 @@ function calcMousePos(evt){ //function for finding the cursor position
     };
 }
 
+function handleMouseClick(evt){
+    if(showWinScreen){
+        p1Score = 0;
+        p2Score = 0;
+        showWinScreen = false;
+    }
+}
+
 window.onload = function() {
     console.log("Hello");
     canvas = document.getElementById('gameCanvas');
@@ -34,6 +45,8 @@ window.onload = function() {
 
     var fPS = 30; //frames per second
     setInterval(function(){moveEverything(),drawEverything();}, 1000/fPS);
+
+    canvas.addEventListener('mousedown',handleMouseClick);
 
     canvas.addEventListener('mousemove', function(evt){
         var mousePos = calcMousePos(evt);
@@ -52,6 +65,9 @@ function compMove(){ // for moving the right paddle
 }
 
 function moveEverything(){
+    if (showWinScreen){
+        return;
+    }
     ballX+=ballSpeedX; //move the ball
     /*if (ballX > gameCanvas.width -10 || ballX < 0 ){ //if the ball hits the edge of the canvas then reverse it's direction
         ballSpeedX = -ballSpeedX;
@@ -61,8 +77,13 @@ function moveEverything(){
     if (ballX <= PADDLE_THICKNESS) { //check if the ball hits the left(yellow) paddle
         if (ballY > pad1Y && ballY < pad1Y + PADDLE_HEIGHT) {
             ballSpeedX = -ballSpeedX;
+            
+            var deltaY = ballY - (pad1Y+PADDLE_HEIGHT/2);//ball control
+            ballSpeedY = deltaY * 0.35;
         }else{
-            p2Score++;
+            p2Score++; //must be before ballreset()
+            ballSpeedX = -10;
+            ballSpeedY = -2;
             ballReset();
         }
     }
@@ -70,8 +91,13 @@ function moveEverything(){
     if (ballX >= canvas.width-PADDLE_THICKNESS) { //check if the ball hits the right(blue) paddle
         if (ballY > pad2Y && ballY < pad2Y + PADDLE_HEIGHT) {
             ballSpeedX = -ballSpeedX;
-        }else{
-            p1Score++;
+
+            var deltaY = ballY - (pad2Y+PADDLE_HEIGHT/2); //ball control
+            ballSpeedY = deltaY * 0.35;
+        }else{ 
+            p1Score++; //must be before ballreset()
+            ballSpeedX = 10;
+            ballSpeedY = 2;
             ballReset();
         }
     }
@@ -89,12 +115,31 @@ function moveEverything(){
     }
 }
 
+function drawNet(){
+    for (var i = 0; i<canvas.height; i+=40){ //incrementing by n pixels at a time
+        colourRect(canvas.width/2-1,i, 2, 20, 'white'); 
+    }
+}
+
 function drawEverything(){
-    
+   
     //canvasContext.fillStyle = 'black';
     colourRect(0,0, canvas.width, canvas.height, 'black'); //creates black background
-    
-    
+    if (showWinScreen){
+        if (p1Score >= WIN_SCORE) {
+        canvasContext.fillStyle = 'yellow';
+        canvasContext.fillText("WINNER WINNER CHICKEN DINNER", 200, 200);
+        
+    }
+    if (p2Score >= WIN_SCORE) {
+        canvasContext.fillStyle = '#ADD8E6';
+        canvasContext.fillText("YOU LOSE", 260, 200);
+        
+    }
+    canvasContext.fillText("click to continue..", 250, 400);
+    return;
+    }
+    drawNet();
     colourCircle(ballX,ballY,10, 'red');//make the ball
     //colourRect(ballX, 100,10,10, 'red'); //red ball
 
@@ -102,7 +147,7 @@ function drawEverything(){
     colourRect(1,pad1Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'yellow'); //yellow PLAYERS paddle
     canvasContext.fillText("SCORE: "+p1Score, 100, 100);
     
-    colourRect(canvas.width-PADDLE_THICKNESS,pad2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, 'blue');//blue paddle
+    colourRect(canvas.width-PADDLE_THICKNESS+1,pad2Y,PADDLE_THICKNESS,PADDLE_HEIGHT, '#ADD8E6');//blue paddle
 
     canvasContext.fillText("SCORE: "+p2Score, canvas.width - 100,100);
 }
@@ -119,9 +164,17 @@ function colourCircle(centreX, centreY, radius, drawColour){
 }
 
 function ballReset(){
-    ballSpeedX = -ballSpeedX;
+    if (p1Score >= WIN_SCORE || p2Score >= WIN_SCORE){
+        
+        showWinScreen = true;
+    }
+
+    
+    
+    //ballSpeedX = -ballSpeedX; 
     ballX = canvas.width/2;
     ballY = canvas.height/2;
+    
 }
 
 </script>
